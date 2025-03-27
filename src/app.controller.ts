@@ -24,6 +24,7 @@ export class AppController {
     const patients = XLSX.utils.sheet_to_json<patientDTO>(sheet, {
       defval: null,
       header: ["chart", "name", "phone", "rrn", "address", "memo"],
+      range: 1,
     });
 
     this.appService.verifyPatient(patients);
