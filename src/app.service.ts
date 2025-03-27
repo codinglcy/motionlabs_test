@@ -1,8 +1,9 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable } from "@nestjs/common";
+import { Patient } from "./db/patient.entity";
 
 @Injectable()
 export class AppService {
-  getHello(): string {
-    return 'Hello World!';
+  parsePatient(patients: Patient[]): void {
+    console.log(patients);
   }
 }
