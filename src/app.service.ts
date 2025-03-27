@@ -1,9 +1,9 @@
 import { Injectable } from "@nestjs/common";
-import { Patient } from "./db/patient.entity";
+import { patientDTO } from "./db/patient.entity";
 
 @Injectable()
 export class AppService {
-  parsePatient(patients: Patient[]): void {
-    console.log(patients);
+  verifyPatient(patients: patientDTO[]): void {
+    // console.log(patients);
   }
 }

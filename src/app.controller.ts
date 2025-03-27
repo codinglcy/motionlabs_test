@@ -7,7 +7,7 @@ import {
 import { AppService } from "./app.service";
 import { FileInterceptor } from "@nestjs/platform-express";
 import * as XLSX from "xlsx";
-import { Patient } from "./db/patient.entity";
+import { patientDTO } from "./db/patient.entity";
 
 @Controller()
 export class AppController {
@@ -21,11 +21,11 @@ export class AppController {
     const sheetName = workbook.SheetNames[0]; //첫번째 시트이름
     const sheet = workbook.Sheets[sheetName]; //첫번째 시트이름으로 해당 시트에 접근
 
-    const patients = XLSX.utils.sheet_to_json<Patient>(sheet, {
+    const patients = XLSX.utils.sheet_to_json<patientDTO>(sheet, {
       defval: null,
       header: ["chart", "name", "phone", "rrn", "address", "memo"],
     });
 
-    this.appService.parsePatient(patients);
+    this.appService.verifyPatient(patients);
   }
 }
