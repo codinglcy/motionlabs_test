@@ -4,14 +4,14 @@ import {
   UploadedFile,
   UseInterceptors,
 } from "@nestjs/common";
-import { AppService } from "./app.service";
+import { AddPatientsService } from "../service";
 import { FileInterceptor } from "@nestjs/platform-express";
 import * as XLSX from "xlsx";
-import { Patient, patientDTO } from "./db/patient.entity";
+import { Patient, patientDTO } from "../entity";
 
 @Controller()
-export class AppController {
-  constructor(private readonly appService: AppService) {}
+export class AddPatientsController {
+  constructor(private readonly appService: AddPatientsService) {}
 
   @Post()
   @UseInterceptors(FileInterceptor("file"))

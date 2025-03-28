@@ -1,8 +1,8 @@
 import { Injectable } from "@nestjs/common";
-import { patientDTO, Patient } from "./db/patient.entity";
+import { patientDTO, Patient } from "../entity";
 
 @Injectable()
-export class AppService {
+export class AddPatientsService {
   addNewPatients(patients: patientDTO[]): Patient[] | void {
     // console.log(patients);
 
