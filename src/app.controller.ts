@@ -7,7 +7,7 @@ import {
 import { AppService } from "./app.service";
 import { FileInterceptor } from "@nestjs/platform-express";
 import * as XLSX from "xlsx";
-import { patientDTO } from "./db/patient.entity";
+import { Patient, patientDTO } from "./db/patient.entity";
 
 @Controller()
 export class AppController {
@@ -15,7 +15,9 @@ export class AppController {
 
   @Post()
   @UseInterceptors(FileInterceptor("file"))
-  async readExcelController(@UploadedFile() file: any) {
+  async readExcelController(
+    @UploadedFile() file: any
+  ): Promise<void | Patient[]> {
     const workbook = XLSX.read(file.buffer, { type: "buffer" });
 
     const sheetName = workbook.SheetNames[0]; //첫번째 시트이름
@@ -27,6 +29,6 @@ export class AppController {
       range: 1,
     });
 
-    this.appService.verifyPatient(patients);
+    return this.appService.addNewPatients(patients);
   }
 }

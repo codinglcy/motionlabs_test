@@ -7,7 +7,7 @@ export class Patient {
   id: number;
 
   @Column({ length: 255, nullable: true }) //차트번호
-  chart: string;
+  chart?: string;
 
   @Column({ length: 255 }) //이름
   name: string;
@@ -19,28 +19,19 @@ export class Patient {
   rrn: string;
 
   @Column({ length: 255, nullable: true }) //주소
-  address: string;
+  address?: string;
 
   @Column({ length: 255, nullable: true }) //메모
-  memo: string;
+  memo?: string;
 }
 
 export class patientDTO {
-  @Column({ nullable: true }) //차트번호
-  chart: string;
-
-  @Column() //이름
+  chart?: string;
   name: string;
-
-  @Column() //전화번호
   phone: string;
-
-  @Column() //주민등록번호
   rrn: string;
+  address?: string;
+  memo?: string;
+}
 
-  @Column({ nullable: true }) //주소
-  address: string;
-
-  @Column({ nullable: true }) //메모
-  memo: string;
 }
