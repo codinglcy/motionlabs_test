@@ -1,27 +1,65 @@
 import { Injectable } from "@nestjs/common";
-import { patientDTO, Patient } from "../entity";
+import {
+  patientDTO,
+  Patient,
+  addPatientsResponseDTO,
+  processedResponseDTO,
+  saveNewPatientsResponseDTO,
+} from "../entity";
+import { PatientRepository } from "src/repository";
 
 @Injectable()
 export class AddPatientsService {
-  addNewPatients(patients: patientDTO[]): Patient[] | void {
+  constructor(private readonly patientRepository: PatientRepository) {}
+
+  async addNewPatients(
+    patients: patientDTO[]
+  ): Promise<addPatientsResponseDTO | void> {
     // console.log(patients);
+    const saveResult = new addPatientsResponseDTO();
+    const processDto = new processedResponseDTO();
+    const saveDto = new saveNewPatientsResponseDTO();
+
+    saveResult.totalRows = patients.length;
 
     //1. 검증
-    const verifiedPatients = this.verifyPatients(patients);
+    const verifiedPatients = await this.verifyPatients(patients);
     console.log(
       `count patients: ${patients.length} / count verified patients: ${verifiedPatients.length}`
     );
     // console.log(verifiedPatients);
+    processDto.afterVerify = verifiedPatients.length;
 
     //2. 중복병합
-    const deduplicatedPatients = this.deduplicatePatients(verifiedPatients);
+    const deduplicatedPatients = await this.deduplicatePatients(
+      verifiedPatients
+    );
     // console.log(deduplicatedPatients);
     console.log(
       `count patients: ${patients.length} / count verified patients: ${verifiedPatients.length} / count deduplicated patients: ${deduplicatedPatients.length}`
     );
+    processDto.afterDeduplicate = deduplicatedPatients.length;
+    saveResult.processedRows = deduplicatedPatients.length;
+    saveResult.skippedRows = patients.length - deduplicatedPatients.length;
 
-    return deduplicatedPatients;
     //3. 저장
+    const { total, updated, inserted } = await this.savePatient(
+      deduplicatedPatients
+    );
+
+    if (deduplicatedPatients.length != total) {
+      throw new Error(
+        "중복병합 처리 된 데이터 개수와 저장 처리(수정,추가)된 개수가 상이합니다."
+      );
+    }
+
+    saveDto.total = total;
+    saveDto.updated = updated;
+    saveDto.inserted = inserted;
+    processDto.save = saveDto;
+    saveResult.process = processDto;
+
+    return saveResult;
   }
 
   private verifyPatients(patients: patientDTO[]): patientDTO[] {
@@ -115,5 +153,11 @@ export class AddPatientsService {
     } catch (e) {
       console.log(e);
     }
+  }
+
+  private async savePatient(
+    newPs: Patient[]
+  ): Promise<saveNewPatientsResponseDTO> {
+    return await this.patientRepository.saveNewPatients(newPs);
   }
 }

@@ -34,3 +34,21 @@ export class patientDTO {
   memo?: string;
 }
 
+export class addPatientsResponseDTO {
+  totalRows: number;
+  processedRows: number;
+  skippedRows: number;
+  process: processedResponseDTO;
+}
+
+export class processedResponseDTO {
+  afterVerify: number;
+  afterDeduplicate: number;
+  save: saveNewPatientsResponseDTO;
+}
+
+export class saveNewPatientsResponseDTO {
+  total: number;
+  updated: number;
+  inserted: number;
+}
