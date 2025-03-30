@@ -15,7 +15,6 @@ export class AddPatientsService {
   async addNewPatients(
     patients: patientDTO[]
   ): Promise<addPatientsResponseDTO | void> {
-    // console.log(patients);
     const saveResult = new addPatientsResponseDTO();
     const processDto = new processedResponseDTO();
     const saveDto = new saveNewPatientsResponseDTO();
@@ -24,20 +23,13 @@ export class AddPatientsService {
 
     //1. 검증
     const verifiedPatients = await this.verifyPatients(patients);
-    console.log(
-      `count patients: ${patients.length} / count verified patients: ${verifiedPatients.length}`
-    );
-    // console.log(verifiedPatients);
     processDto.afterVerify = verifiedPatients.length;
 
     //2. 중복병합
     const deduplicatedPatients = await this.deduplicatePatients(
       verifiedPatients
     );
-    // console.log(deduplicatedPatients);
-    console.log(
-      `count patients: ${patients.length} / count verified patients: ${verifiedPatients.length} / count deduplicated patients: ${deduplicatedPatients.length}`
-    );
+
     processDto.afterDeduplicate = deduplicatedPatients.length;
     saveResult.processedRows = deduplicatedPatients.length;
     saveResult.skippedRows = patients.length - deduplicatedPatients.length;
@@ -80,7 +72,7 @@ export class AddPatientsService {
       );
       return filteredPatients;
     } catch (e) {
-      console.log(e);
+      throw e;
     }
   }
 
@@ -116,7 +108,7 @@ export class AddPatientsService {
       }
       return deduplicatedPatients;
     } catch (e) {
-      console.log(e);
+      throw e;
     }
   }
 
@@ -127,7 +119,6 @@ export class AddPatientsService {
       const rrn =
         p.rrn.length == 6 ? p.rrn + "0" : p.rrn.replace(/-/, "").slice(0, 7);
       const pRrn = rrn.slice(0, 6) + "-" + rrn.slice(6);
-      // console.log(`${p.phone} -> ${pPhone} / ${p.rrn} -> ${pRrn}`);
 
       if (oldP) {
         pNew.chart = oldP.chart ? p.chart ?? oldP.chart : p.chart;
@@ -146,7 +137,7 @@ export class AddPatientsService {
       }
       return pNew;
     } catch (e) {
-      console.log(e);
+      throw e;
     }
   }
 

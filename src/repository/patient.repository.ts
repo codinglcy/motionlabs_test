@@ -46,9 +46,6 @@ export class PatientRepository {
         }
 
         if (await queryRunner.manager.existsBy(Patient, noChartkey)) {
-          // console.log(
-          //   "*****************************noChartKey true*********************"
-          // );
           await queryRunner.manager
             .update(Patient, noChartkey, updateSet)
             .then(() => {
@@ -58,18 +55,12 @@ export class PatientRepository {
           patient.chart &&
           (await queryRunner.manager.existsBy(Patient, chartKey))
         ) {
-          // console.log(
-          //   "*****************************chartKey true*********************"
-          // );
           await queryRunner.manager
             .update(Patient, chartKey, updateSet)
             .then(() => {
               updateCnt = updateCnt + 1;
             });
         } else {
-          // console.log(
-          //   "***************************** insert *********************"
-          // );
           await queryRunner.manager.insert(Patient, patient).then(() => {
             insertCnt = insertCnt + 1;
           });
@@ -115,7 +106,6 @@ export class PatientRepository {
       if (options.phone) {
         findOptions.where["phone"] = options.phone;
       }
-      console.log(findOptions);
 
       [patients, total] = await queryRunner.manager.findAndCount(
         Patient,

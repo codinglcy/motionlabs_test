@@ -51,8 +51,8 @@ export class PatientsController {
   ): Promise<getPatientsResponseDTO> {
     return await this.getService.getPatinets(
       options,
-      Number(page),
-      Number(count)
+      Number(page) ?? 1,
+      Number(count) ?? 20
     );
   }
 }

@@ -16,7 +16,7 @@ import { PatientRepository } from "./repository";
       password: process.env.MYSQL_PASSWORD,
       database: process.env.MYSQL_DATABASE,
       entities: [Patient],
-      synchronize: true, //이후 false로 수정하기
+      synchronize: true,
       logging: true,
       // dropSchema: true,
     }),
