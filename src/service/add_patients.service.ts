@@ -43,19 +43,14 @@ export class AddPatientsService {
     saveResult.skippedRows = patients.length - deduplicatedPatients.length;
 
     //3. 저장
-    const { total, updated, inserted } = await this.savePatient(
+    const { total, updated, inserted, failed } = await this.savePatient(
       deduplicatedPatients
     );
-
-    if (deduplicatedPatients.length != total) {
-      throw new Error(
-        "중복병합 처리 된 데이터 개수와 저장 처리(수정,추가)된 개수가 상이합니다."
-      );
-    }
 
     saveDto.total = total;
     saveDto.updated = updated;
     saveDto.inserted = inserted;
+    saveDto.failed = failed;
     processDto.save = saveDto;
     saveResult.process = processDto;
 

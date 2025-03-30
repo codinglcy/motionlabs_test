@@ -77,9 +77,10 @@ export class PatientRepository {
 
       await queryRunner.commitTransaction();
       return {
-        total: updateCnt + insertCnt,
+        total: newPs.length,
         updated: updateCnt,
         inserted: insertCnt,
+        failed: newPs.length - (updateCnt + insertCnt),
       };
     } catch (e) {
       console.log("++++++++ saveNewPatients transaction rollback ++++++++");
