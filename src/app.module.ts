@@ -1,9 +1,10 @@
 import { Module } from "@nestjs/common";
-import { AppController } from "./app.controller";
-import { AppService } from "./app.service";
+import { AddPatientsController } from "./controller";
+import { AddPatientsService } from "./service";
 import { TypeOrmModule } from "@nestjs/typeorm";
 import "dotenv/config";
-import { Patient } from "./db/patient.entity";
+import { Patient } from "./entity";
+import { PatientRepository } from "./repository";
 
 @Module({
   imports: [
@@ -16,9 +17,11 @@ import { Patient } from "./db/patient.entity";
       database: process.env.MYSQL_DATABASE,
       entities: [Patient],
       synchronize: true, //이후 false로 수정하기
+      // logging: true,
+      dropSchema: true,
     }),
   ],
-  controllers: [AppController],
-  providers: [AppService],
+  controllers: [AddPatientsController],
+  providers: [AddPatientsService, PatientRepository],
 })
 export class AppModule {}
