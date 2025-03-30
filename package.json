@@ -23,6 +23,7 @@
     "@nestjs/common": "^9.2.0",
     "@nestjs/core": "^9.2.0",
     "@nestjs/platform-express": "^9.2.0",
+    "@nestjs/swagger": "^8.1.1",
     "@nestjs/typeorm": "^9.0.1",
     "mysql2": "^3.14.0",
     "reflect-metadata": "^0.1.13",
