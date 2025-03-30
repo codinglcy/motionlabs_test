@@ -1,1 +1,1 @@
-export * from "./add_patients.controller";
+export * from "./patients.controller";
