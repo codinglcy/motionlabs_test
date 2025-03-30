@@ -1,5 +1,6 @@
 import { Injectable } from "@nestjs/common";
-import { Patient, saveNewPatientsResponseDTO } from "src/entity";
+import { Patient } from "src/entity";
+import { getPatientsOptions, saveNewPatientsResponseDTO } from "src/DTOs";
 import { DataSource, IsNull, Repository } from "typeorm";
 
 @Injectable()
@@ -84,6 +85,47 @@ export class PatientRepository {
       };
     } catch (e) {
       console.log("++++++++ saveNewPatients transaction rollback ++++++++");
+      await queryRunner.rollbackTransaction();
+      throw e;
+    } finally {
+      await queryRunner.release();
+    }
+  }
+
+  async getPatients(
+    options: getPatientsOptions,
+    page: number,
+    count: number
+  ): Promise<{ patients: Patient[]; total: number }> {
+    const queryRunner = this.dataSource.createQueryRunner();
+    const findOptions = { take: count, skip: (page - 1) * count, where: {} };
+    let patients: Patient[];
+    let total: number;
+
+    await queryRunner.connect();
+    await queryRunner.startTransaction();
+
+    try {
+      if (options.chart) {
+        findOptions.where["chart"] = options.chart;
+      }
+      if (options.name) {
+        findOptions.where["name"] = options.name;
+      }
+      if (options.phone) {
+        findOptions.where["phone"] = options.phone;
+      }
+      console.log(findOptions);
+
+      [patients, total] = await queryRunner.manager.findAndCount(
+        Patient,
+        findOptions
+      );
+
+      await queryRunner.commitTransaction();
+      return { patients, total };
+    } catch (e) {
+      console.log("++++++++ getPatients transaction rollback ++++++++");
       await queryRunner.rollbackTransaction();
       throw e;
     } finally {

@@ -24,32 +24,3 @@ export class Patient {
   @Column({ length: 255, nullable: true }) //메모
   memo?: string;
 }
-
-export class patientDTO {
-  chart?: string;
-  name: string;
-  phone: string;
-  rrn: string;
-  address?: string;
-  memo?: string;
-}
-
-export class addPatientsResponseDTO {
-  totalRows: number;
-  processedRows: number;
-  skippedRows: number;
-  process: processedResponseDTO;
-}
-
-export class processedResponseDTO {
-  afterVerify: number;
-  afterDeduplicate: number;
-  save: saveNewPatientsResponseDTO;
-}
-
-export class saveNewPatientsResponseDTO {
-  total: number;
-  updated: number;
-  inserted: number;
-  failed: number;
-}

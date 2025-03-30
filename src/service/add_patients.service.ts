@@ -1,11 +1,11 @@
 import { Injectable } from "@nestjs/common";
+import { Patient } from "../entity";
 import {
   patientDTO,
-  Patient,
   addPatientsResponseDTO,
   processedResponseDTO,
   saveNewPatientsResponseDTO,
-} from "../entity";
+} from "../DTOs";
 import { PatientRepository } from "src/repository";
 
 @Injectable()
