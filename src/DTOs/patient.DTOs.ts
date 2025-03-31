@@ -24,8 +24,7 @@ export class processedResponseDTO {
 
 export class saveNewPatientsResponseDTO {
   total: number;
-  updated: number;
-  inserted: number;
+  updatedAndInserted: number;
   failed: number;
 }
 

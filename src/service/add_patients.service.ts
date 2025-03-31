@@ -35,13 +35,14 @@ export class AddPatientsService {
     saveResult.skippedRows = patients.length - deduplicatedPatients.length;
 
     //3. 저장
-    const { total, updated, inserted, failed } = await this.savePatient(
-      deduplicatedPatients
-    );
+    const {
+      total,
+      updatedAndInserted: updated_and_inserted,
+      failed,
+    } = await this.savePatient(deduplicatedPatients);
 
     saveDto.total = total;
-    saveDto.updated = updated;
-    saveDto.inserted = inserted;
+    saveDto.updatedAndInserted = updated_and_inserted;
     saveDto.failed = failed;
     processDto.save = saveDto;
     saveResult.process = processDto;
