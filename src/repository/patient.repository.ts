@@ -17,20 +17,15 @@ export class PatientRepository {
     await queryRunner.startTransaction();
 
     try {
-      let updateCnt = 0;
-      let insertCnt = 0;
+      let addCnt = 0;
 
       for (const patient of newPs) {
         let updateSet = {
           rrn: patient.rrn,
         };
+        let updateList = ["rrn"];
         const noChartkey = {
           chart: IsNull(),
-          name: patient.name,
-          phone: patient.phone,
-        };
-        const chartKey = {
-          chart: patient.chart,
           name: patient.name,
           phone: patient.phone,
         };
@@ -40,29 +35,33 @@ export class PatientRepository {
         }
         if (patient.address) {
           updateSet["address"] = patient.address;
+          updateList.push("address");
         }
         if (patient.memo) {
           updateSet["memo"] = patient.memo;
+          updateList.push("memo");
         }
 
         if (await queryRunner.manager.existsBy(Patient, noChartkey)) {
           await queryRunner.manager
             .update(Patient, noChartkey, updateSet)
             .then(() => {
-              updateCnt = updateCnt + 1;
+              addCnt = addCnt + 1;
             });
-        } else if (
-          patient.chart &&
-          (await queryRunner.manager.existsBy(Patient, chartKey))
-        ) {
+        } else if (patient.chart) {
           await queryRunner.manager
-            .update(Patient, chartKey, updateSet)
-            .then(() => {
-              updateCnt = updateCnt + 1;
+            .createQueryBuilder()
+            .insert()
+            .into(Patient)
+            .values(patient)
+            .orUpdate(updateList)
+            .execute()
+            .then((res) => {
+              addCnt = addCnt + res.raw.affectedRows;
             });
         } else {
           await queryRunner.manager.insert(Patient, patient).then(() => {
-            insertCnt = insertCnt + 1;
+            addCnt = addCnt + 1;
           });
         }
       }
@@ -70,9 +69,8 @@ export class PatientRepository {
       await queryRunner.commitTransaction();
       return {
         total: newPs.length,
-        updated: updateCnt,
-        inserted: insertCnt,
-        failed: newPs.length - (updateCnt + insertCnt),
+        updatedAndInserted: addCnt,
+        failed: newPs.length - addCnt,
       };
     } catch (e) {
       console.log("++++++++ saveNewPatients transaction rollback ++++++++");
