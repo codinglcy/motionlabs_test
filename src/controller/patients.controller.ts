@@ -38,7 +38,7 @@ export class PatientsController {
   })
   @ApiBody({
     description:
-      "등록할 환자데이터가 입력되어있는 Excel 파일 key값을 'file'로 지정하여 보내주면 된다.",
+      "등록할 환자데이터가 입력되어있는 Excel 파일 key값을 'file'로 지정하여 보내주면 된다.<br>항상 엑셀파일의 첫번째 시트를 읽어들이며, 해당 시트의 첫번째 열은 헤더인 것으로 가정.<br>열의 순서는 항상 차트번호, 이름 전화번호, 주민등록번호, 주소, 메모 순서여야 한다.",
     schema: {
       type: "object",
       properties: { file: { type: "string", format: "binary" } },
@@ -170,7 +170,7 @@ export class PatientsController {
     @Query("count") count?: number
   ): Promise<getPatientsResponseDTO> {
     try {
-      return await this.getService.getPatinets(
+      return await this.getService.getPatients(
         options,
         Number(page) ?? 1,
         Number(count) ?? 20

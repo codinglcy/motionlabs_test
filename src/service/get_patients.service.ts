@@ -6,7 +6,7 @@ import { PatientRepository } from "src/repository";
 export class GetPatientsService {
   constructor(private readonly patientRepository: PatientRepository) {}
 
-  async getPatinets(
+  async getPatients(
     opts: getPatientsOptions,
     page: number,
     count: number
