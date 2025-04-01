@@ -1,4 +1,4 @@
-import { Injectable } from "@nestjs/common";
+import { HttpException, HttpStatus, Injectable } from "@nestjs/common";
 import { Patient } from "../entity";
 import {
   patientDTO,
@@ -14,40 +14,43 @@ export class AddPatientsService {
 
   async addNewPatients(
     patients: patientDTO[]
-  ): Promise<addPatientsResponseDTO | void> {
-    const saveResult = new addPatientsResponseDTO();
-    const processDto = new processedResponseDTO();
-    const saveDto = new saveNewPatientsResponseDTO();
+  ): Promise<addPatientsResponseDTO> {
+    try {
+      const saveResult = new addPatientsResponseDTO();
+      const processDto = new processedResponseDTO();
+      const saveDto = new saveNewPatientsResponseDTO();
 
-    saveResult.totalRows = patients.length;
+      saveResult.totalRows = patients.length;
 
-    //1. 검증
-    const verifiedPatients = await this.verifyPatients(patients);
-    processDto.afterVerify = verifiedPatients.length;
+      //1. 검증
+      const verifiedPatients = await this.verifyPatients(patients);
+      processDto.afterVerify = verifiedPatients.length;
 
-    //2. 중복병합
-    const deduplicatedPatients = await this.deduplicatePatients(
-      verifiedPatients
-    );
+      //2. 중복병합
+      const deduplicatedPatients = await this.deduplicatePatients(
+        verifiedPatients
+      );
 
-    processDto.afterDeduplicate = deduplicatedPatients.length;
-    saveResult.processedRows = deduplicatedPatients.length;
-    saveResult.skippedRows = patients.length - deduplicatedPatients.length;
+      processDto.afterDeduplicate = deduplicatedPatients.length;
+      saveResult.processedRows = deduplicatedPatients.length;
+      saveResult.skippedRows = patients.length - deduplicatedPatients.length;
 
-    //3. 저장
-    const {
-      total,
-      updatedAndInserted: updated_and_inserted,
-      failed,
-    } = await this.savePatient(deduplicatedPatients);
+      //3. 저장
+      const { total, updatedAndInserted, failed } = await this.savePatient(
+        deduplicatedPatients
+      );
 
-    saveDto.total = total;
-    saveDto.updatedAndInserted = updated_and_inserted;
-    saveDto.failed = failed;
-    processDto.save = saveDto;
-    saveResult.process = processDto;
+      saveDto.total = total;
+      saveDto.updatedAndInserted = updatedAndInserted;
+      saveDto.failed = failed;
+      processDto.save = saveDto;
+      saveResult.process = processDto;
 
-    return saveResult;
+      return saveResult;
+    } catch (e) {
+      throw new HttpException(e, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
   }
 
   private verifyPatients(patients: patientDTO[]): patientDTO[] {
@@ -73,7 +76,7 @@ export class AddPatientsService {
       );
       return filteredPatients;
     } catch (e) {
-      throw e;
+      throw new HttpException(e, HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }
 
@@ -109,7 +112,7 @@ export class AddPatientsService {
       }
       return deduplicatedPatients;
     } catch (e) {
-      throw e;
+      throw new HttpException(e, HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }
 
@@ -138,13 +141,17 @@ export class AddPatientsService {
       }
       return pNew;
     } catch (e) {
-      throw e;
+      throw new HttpException(e, HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }
 
   private async savePatient(
     newPs: Patient[]
   ): Promise<saveNewPatientsResponseDTO> {
-    return await this.patientRepository.saveNewPatients(newPs);
+    try {
+      return await this.patientRepository.saveNewPatients(newPs);
+    } catch (e) {
+      throw new HttpException(e, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
   }
 }

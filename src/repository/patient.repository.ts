@@ -1,4 +1,4 @@
-import { Injectable } from "@nestjs/common";
+import { HttpException, HttpStatus, Injectable } from "@nestjs/common";
 import { Patient } from "src/entity";
 import { getPatientsOptions, saveNewPatientsResponseDTO } from "src/DTOs";
 import { DataSource, IsNull, Repository } from "typeorm";
@@ -73,9 +73,8 @@ export class PatientRepository {
         failed: newPs.length - addCnt,
       };
     } catch (e) {
-      console.log("++++++++ saveNewPatients transaction rollback ++++++++");
       await queryRunner.rollbackTransaction();
-      throw e;
+      throw new HttpException(e, HttpStatus.INTERNAL_SERVER_ERROR);
     } finally {
       await queryRunner.release();
     }
@@ -113,9 +112,8 @@ export class PatientRepository {
       await queryRunner.commitTransaction();
       return { patients, total };
     } catch (e) {
-      console.log("++++++++ getPatients transaction rollback ++++++++");
       await queryRunner.rollbackTransaction();
-      throw e;
+      throw new HttpException(e, HttpStatus.INTERNAL_SERVER_ERROR);
     } finally {
       await queryRunner.release();
     }
