@@ -50,6 +50,7 @@ export class AddPatientsService {
     } catch (e) {
       throw new HttpException(e, HttpStatus.INTERNAL_SERVER_ERROR);
     }
+
   }
 
   private verifyPatients(patients: patientDTO[]): patientDTO[] {
